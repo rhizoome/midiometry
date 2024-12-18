@@ -4,5 +4,5 @@
 # [package_name]
 # name = "Human Readable Plugin Name"  # defaults to <package_name>
 
-[circle_of_5ths]
-name = "Circle Of 5ths"
+[midiometry]
+name = "midiometry"

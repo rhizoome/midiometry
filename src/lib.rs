@@ -4,7 +4,6 @@ use editor::create_editor;
 use nih_plug::prelude::*;
 use rtrb::{Producer, RingBuffer};
 use std::sync::Arc;
-use triple_buffer::triple_buffer;
 
 // This is a shortened version of the gain example with most comments removed, check out
 // https://github.com/robbert-vdh/nih-plug/blob/master/plugins/examples/gain/src/lib.rs to get
@@ -15,15 +14,8 @@ struct PluginStruct {
     input_buffer: Option<Producer<NoteEvent<()>>>,
 }
 
-#[derive(Params)]
-struct PluginStructParams {
-    /// The parameter's ID is used to identify the parameter in the wrappred plugin API. As long as
-    /// these IDs remain constant, you can rename and reorder these fields as you wish. The
-    /// parameters are exposed to the host in the same order they were defined. In this case, this
-    /// gain parameter is stored as linear gain while the values are displayed in decibels.
-    #[id = "gain"]
-    pub gain: FloatParam,
-}
+#[derive(Params, Default)]
+struct PluginStructParams {}
 
 impl Default for PluginStruct {
     fn default() -> Self {
@@ -34,38 +26,8 @@ impl Default for PluginStruct {
     }
 }
 
-impl Default for PluginStructParams {
-    fn default() -> Self {
-        Self {
-            // This gain is stored as linear gain. NIH-plug comes with useful conversion functions
-            // to treat these kinds of parameters as if we were dealing with decibels. Storing this
-            // as decibels is easier to work with, but requires a conversion for every sample.
-            gain: FloatParam::new(
-                "Gain",
-                util::db_to_gain(0.0),
-                FloatRange::Skewed {
-                    min: util::db_to_gain(-30.0),
-                    max: util::db_to_gain(30.0),
-                    // This makes the range appear as if it was linear when displaying the values as
-                    // decibels
-                    factor: FloatRange::gain_skew_factor(-30.0, 30.0),
-                },
-            )
-            // Because the gain parameter is stored as linear gain instead of storing the value as
-            // decibels, we need logarithmic smoothing
-            .with_smoother(SmoothingStyle::Logarithmic(50.0))
-            .with_unit(" dB")
-            // There are many predefined formatters we can use here. If the gain was stored as
-            // decibels instead of as a linear gain value, we could have also used the
-            // `.with_step_size(0.1)` function to get internal rounding.
-            .with_value_to_string(formatters::v2s_f32_gain_to_db(2))
-            .with_string_to_value(formatters::s2v_f32_gain_to_db()),
-        }
-    }
-}
-
 impl Plugin for PluginStruct {
-    const NAME: &'static str = "Circle Of 5ths";
+    const NAME: &'static str = "MIDIOMETRY";
     const VENDOR: &'static str = "dvub";
     const URL: &'static str = env!("CARGO_PKG_HOMEPAGE");
     const EMAIL: &'static str = "dvubdevs@gmail.com";
@@ -129,18 +91,18 @@ impl Plugin for PluginStruct {
         context: &mut impl ProcessContext<Self>,
     ) -> ProcessStatus {
         for channel_samples in buffer.iter_samples() {
-            // Smoothing is optionally built into the parameters themselves
-            let gain = self.params.gain.smoothed.next();
-
+            // NOT SURE IF THIS IS NEEDED...
             for sample in channel_samples {
-                *sample *= gain;
+                *sample *= 1.0;
             }
-
+            // TODO:
+            // does it matter where this goes?
             if let Some(event) = context.next_event() {
-                nih_log!("Sending an event to the GUI Thread...");
                 if let Some(buffer) = &mut self.input_buffer {
                     buffer.push(event).unwrap();
                 }
+                // im fairly sure this is necessary
+                context.send_event(event);
             }
         }
 
@@ -161,7 +123,7 @@ impl Plugin for PluginStruct {
 }
 
 impl ClapPlugin for PluginStruct {
-    const CLAP_ID: &'static str = "com.your-domain.circle-of-5ths";
+    const CLAP_ID: &'static str = "com.your-domain.midiometry";
     const CLAP_DESCRIPTION: Option<&'static str> = Some("A cool plugin for vis midi input");
     const CLAP_MANUAL_URL: Option<&'static str> = Some(Self::URL);
     const CLAP_SUPPORT_URL: Option<&'static str> = None;

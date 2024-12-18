@@ -259,17 +259,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fd16c4719339c4530435d38e511904438d07cce7950afa3718a84ac36c10e89e"
 
 [[package]]
-name = "circle_of_5ths"
-version = "0.1.0"
-dependencies = [
- "nih_plug",
- "nih_plug_webview",
- "rtrb",
- "serde_json",
- "triple_buffer",
-]
-
-[[package]]
 name = "clap-sys"
 version = "0.3.0"
 source = "git+https://github.com/robbert-vdh/clap-sys.git?branch=feature%2Fcstr-macro#523a5f8a8dd021ec99e7d6e0c0ebe7741a3da9d4"
@@ -1204,6 +1193,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "include_dir"
+version = "0.7.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "923d117408f1e49d914f1a379a309cffe4f18c05cf4e3d12e613a15fc81bd0dd"
+dependencies = [
+ "include_dir_macros",
+]
+
+[[package]]
+name = "include_dir_macros"
+version = "0.7.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7cab85a7ed0bd5f0e76d93846e0147172bed2e2d3f859bcc33a8d9699cad1a75"
+dependencies = [
+ "proc-macro2",
+ "quote",
+]
+
+[[package]]
 name = "indexmap"
 version = "1.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1404,6 +1412,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6f2dd5c7f8aaf48a76e389068ab25ed80bdbc226b887f9013844c415698c9952"
 
 [[package]]
+name = "midiometry"
+version = "0.1.0"
+dependencies = [
+ "include_dir",
+ "mime_guess",
+ "nih_plug",
+ "nih_plug_webview",
+ "rtrb",
+ "serde_json",
+ "triple_buffer",
+]
+
+[[package]]
 name = "mime"
 version = "0.3.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1520,6 +1541,7 @@ dependencies = [
 [[package]]
 name = "nih_plug_webview"
 version = "0.0.0"
+source = "git+https://github.com/dvub/nih-plug-webview.git#b21f1005e0ba60c7b3c81ce4b79644919867f0b5"
 dependencies = [
  "baseview",
  "crossbeam",

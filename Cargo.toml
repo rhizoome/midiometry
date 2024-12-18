@@ -1,5 +1,5 @@
 [package]
-name = "circle_of_5ths"
+name = "midiometry"
 version = "0.1.0"
 edition = "2021"
 authors = ["dvub <dvubdevs@gmail.com>"]
@@ -14,6 +14,8 @@ members = ["xtask"]
 crate-type = ["cdylib"]
 
 [dependencies]
+include_dir = "0.7.4"
+mime_guess = "2.0.5"
 nih_plug = { git = "https://github.com/robbert-vdh/nih-plug.git" }
 # Remove the `assert_process_allocs` feature to allow allocations on the audio
 # thread in debug builds.
@@ -21,7 +23,8 @@ nih_plug = { git = "https://github.com/robbert-vdh/nih-plug.git" }
 # the GPL compatibility requirement
 # nih_plug = { git = "https://github.com/robbert-vdh/nih-plug.git", default-features = false, features = ["assert_process_allocs"] }
 
-nih_plug_webview = { path = "../dvub-nih-plug-webview" }
+nih_plug_webview = { git = "https://github.com/dvub/nih-plug-webview.git" }
+# nih_plug_webview = { path = "../dvub-nih-plug-webview" }
 rtrb = "0.3.1"
 serde_json = "1.0.133"
 triple_buffer = "8.0.0"
