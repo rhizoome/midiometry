@@ -6,10 +6,11 @@ export default function Home() {
 	const [notes, setNotes] = useState<number[]>([]);
 
 	useEffect(() => {
+		
 		window.onPluginMessage = (message: number[]) => {
 			const velocity = message[2];
 			const noteNumber = message[1];
-			
+
 			if (velocity > 0) {
 				console.log('NOTE ON:', message);
 

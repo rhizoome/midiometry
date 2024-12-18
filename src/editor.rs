@@ -1,8 +1,12 @@
-use std::sync::{Arc, Mutex};
+use std::{
+    path::Path,
+    sync::{Arc, Mutex},
+};
 
 use nih_plug::midi::{MidiResult, NoteEvent};
 use nih_plug_webview::{
-    DropData, DropEffect, EventStatus, HTMLSource, Key, MouseEvent, WebViewEditor,
+    editors::add_asset_dir_protocol, DropData, DropEffect, EventStatus, HTMLSource, Key,
+    MouseEvent, WebViewEditor,
 };
 use rtrb::Consumer;
 use serde_json::json;
@@ -14,11 +18,8 @@ pub fn create_editor(buffer: Consumer<NoteEvent<()>>) -> WebViewEditor {
 
     #[cfg(debug_assertions)]
     let src = HTMLSource::URL("http://localhost:3000".to_owned());
-    #[cfg(debug_assertions)]
-    let mut editor = WebViewEditor::new(src, size);
 
-    #[cfg(not(debug_assertions))]
-    let mut editor = todo!();
+    let mut editor = WebViewEditor::new(src, size);
 
     editor = editor
         .with_developer_mode(true)
