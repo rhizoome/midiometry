@@ -1,0 +1,36 @@
+[package]
+name = "circle_of_5ths"
+version = "0.1.0"
+edition = "2021"
+authors = ["dvub <dvubdevs@gmail.com>"]
+license = "GPL-3.0-or-later"
+homepage = "todo.todo"
+description = "A cool plugin for vis midi input"
+
+[workspace]
+members = ["xtask"]
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+nih_plug = { git = "https://github.com/robbert-vdh/nih-plug.git" }
+# Remove the `assert_process_allocs` feature to allow allocations on the audio
+# thread in debug builds.
+# Uncomment the below line to disable the on-by-default VST3 feature to remove
+# the GPL compatibility requirement
+# nih_plug = { git = "https://github.com/robbert-vdh/nih-plug.git", default-features = false, features = ["assert_process_allocs"] }
+
+nih_plug_webview = { path = "../dvub-nih-plug-webview" }
+rtrb = "0.3.1"
+serde_json = "1.0.133"
+triple_buffer = "8.0.0"
+
+[profile.release]
+lto = "thin"
+strip = "symbols"
+
+[profile.profiling]
+inherits = "release"
+debug = true
+strip = "none"
