@@ -23,11 +23,11 @@ jobs:
       matrix:
         include:
           - { name: ubuntu, os: ubuntu-latest, cross-target: "" }
-          # - {
-          #    name: macos-universal,
-          #    os: macos-latest,
-          #    cross-target: aarch64-apple-darwin,
-          #  }
+          - {
+              name: macos-universal,
+              os: macos-latest,
+              cross-target: aarch64-apple-darwin,
+            }
           - { name: windows, os: windows-latest, cross-target: "" }
     name: Package plugin binaries
     runs-on: ${{ matrix.os }}
@@ -70,10 +70,10 @@ jobs:
       - name: Set up Rust toolchain
         # Needed for SIMD
         uses: dtolnay/rust-toolchain@nightly
-        # with:
-        # The macOS AArch64 build is done from an x86_64 macOS CI runner, so
-        # it needs to be cross compiled
-        #targets: ${{ matrix.cross-target }}
+        with:
+          # The macOS AArch64 build is done from an x86_64 macOS CI runner, so
+          # it needs to be cross compiled
+          targets: ${{ matrix.cross-target }}
 
       - name: Package all targets from bundler.toml
         # Instead of hardcoding which targets to build and package, we'll
@@ -94,7 +94,7 @@ jobs:
       - name: Determine build archive name
         run: |
           # Windows (usually) doesn't like colons in file names
-          echo "ARCHIVE_NAME=nih-plugs-$(date -u +"%Y-%m-%d-%H%m%S")-${{ matrix.name }}" >> "$GITHUB_ENV"
+          echo "ARCHIVE_NAME=midiometry-$(date -u +"%Y-%m-%d-%H%m%S")-${{ matrix.name }}" >> "$GITHUB_ENV"
       - name: Move all packaged plugin into a directory
         run: |
           # GitHub Action strips the top level directory, great, have another one
