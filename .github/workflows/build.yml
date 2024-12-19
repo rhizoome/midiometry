@@ -70,10 +70,10 @@ jobs:
       - name: Set up Rust toolchain
         # Needed for SIMD
         uses: dtolnay/rust-toolchain@nightly
-        with:
-          # The macOS AArch64 build is done from an x86_64 macOS CI runner, so
-          # it needs to be cross compiled
-          targets: ${{ matrix.cross-target }}
+        # with:
+        # The macOS AArch64 build is done from an x86_64 macOS CI runner, so
+        # it needs to be cross compiled
+        #targets: ${{ matrix.cross-target }}
 
       - name: Package all targets from bundler.toml
         # Instead of hardcoding which targets to build and package, we'll
@@ -107,8 +107,8 @@ jobs:
           # GitHub Action strips the top level directory, great, have another one
           mkdir -p "$ARCHIVE_NAME/$ARCHIVE_NAME"
           mv target/bundled/* "$ARCHIVE_NAME/$ARCHIVE_NAME"
-      - name: Add an OS-specific readme file with installation instructions
-        run: cp ".github/workflows/readme-${{ runner.os }}.txt" "$ARCHIVE_NAME/$ARCHIVE_NAME/README.txt"
+      # - name: Add an OS-specific readme file with installation instructions
+      #   run: cp ".github/workflows/readme-${{ runner.os }}.txt" "$ARCHIVE_NAME/$ARCHIVE_NAME/README.txt"
       - uses: actions/upload-artifact@v3
         with:
           name: ${{ env.ARCHIVE_NAME }}
