@@ -75,6 +75,7 @@ jobs:
           # it needs to be cross compiled
           targets: ${{ matrix.cross-target }}
 
+        # i have no idea why this needs to be here, the macos version just wouldn't build without it
       - name: Add correct macos target
         if: startsWith(matrix.os, 'macos')
         run: rustup target add x86_64-apple-darwin

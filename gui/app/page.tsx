@@ -2,34 +2,73 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 
+const NOTE_ON = 144;
+const NOTE_OFF = 128;
+const NOTE_NAMES = [
+	'C',
+	'G',
+	'D',
+	'A',
+	'E',
+	'B',
+	'F#/Gb',
+	'C#/Db',
+	'Ab',
+	'Eb',
+	'Bb',
+	'F',
+];
+// https://colorkit.co/palette/00202e-003f5c-2c4875-8a508f-bc5090-ff6361-ff8531-ffa600-ffd380/
+//  #ffadad, #ffd6a5, #fdffb6, #caffbf, #9bf6ff, #a0c4ff, #bdb2ff and #ffc6ff.
+const COLORS = [
+	'255,173,173',
+	'255,214,165',
+	'253,255,182',
+	'202,255,191',
+	'155,246,255',
+	'160,196,255',
+	'189,178,255',
+	'255,198,255',
+];
+
 export default function Home() {
 	const [notes, setNotes] = useState<number[]>([]);
 
 	useEffect(() => {
-		
 		window.onPluginMessage = (message: number[]) => {
-			const velocity = message[2];
+			const noteStatus = message[0];
+
+			// TODO:
+			// make use of velocity!
+			//const velocity = message[2];
 			const noteNumber = message[1];
 
-			if (velocity > 0) {
+			if (noteStatus === NOTE_ON) {
 				console.log('NOTE ON:', message);
 
 				setNotes((prevState) => [...prevState, noteNumber]);
-			} else {
+			} else if (noteStatus === NOTE_OFF) {
 				console.log('NOTE OFF:', message);
 				// 0 velocity = note OFF
 				setNotes((prevState) =>
 					prevState.filter((note) => note !== noteNumber)
 				);
 			}
-
-			//const event = new CustomEvent('pluginMessage', { detail: message });
-			// window.dispatchEvent(event);
 		};
 	}, []);
 
 	return (
-		<div className=' overflow-hidden'>
+		<div className='overflow-hidden h-screen w-screen bg-[#121212] text-white'>
+			{/* --- background title text thingy --- */}
+			<div className='flex h-full w-full justify-center items-center opacity-25 text-4xl'>
+				<h1>MIDIOMETRY</h1>
+			</div>
+
+			{/* --- credits! --- */}
+			<div className='absolute bottom-0 right-0 opacity-25 m-1'>
+				<p>a plugin by dvub</p>
+			</div>
+
 			<Dodecagon notes={notes} />
 		</div>
 	);
@@ -40,83 +79,87 @@ const Dodecagon = (props: { notes: number[] }) => {
 
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-	useEffect(() => {}, []);
-
 	useEffect(() => {
 		// --- init setup --- //
-
 		const refCurrent = canvasRef.current!;
 		const ctx = refCurrent.getContext('2d')!;
 
 		ctx.clearRect(0, 0, refCurrent.width, refCurrent.height);
+		ctx.textAlign = 'center';
 
 		const centerX = refCurrent.width / 2;
 		const centerY = refCurrent.height / 2;
 		const radius = Math.min(refCurrent.width, refCurrent.height) * 0.33;
 
+		// this has to be here because we need canvas context for center coords and radius
 		const coordinates = generateCoordinates(
 			{ x: centerX, y: centerY },
 			radius
 		);
-		const noteNames = [
-			'C',
-			'G',
-			'D',
-			'A',
-			'E',
-			'B',
-			'F#/Gb',
-			'C#/Db',
-			'Ab',
-			'Eb',
-			'Bb',
-			'F',
-		];
 
-		ctx.lineWidth = 2;
-
-		ctx.strokeStyle = `rgba(0,0,0,1)`;
-		ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-		// ctx.stroke();
-
-		coordinates.forEach((coordinate, index) => {
-			const text = noteNames[index];
-			ctx.fillText(text, coordinate.x + 10, coordinate.y);
+		// --- add note names in slightly larger circle --- //
+		const textOffset = 25;
+		generateCoordinates(
+			{ x: centerX, y: centerY },
+			radius + textOffset
+		).forEach((coordinate, index) => {
+			const text = NOTE_NAMES[index];
+			ctx.fillStyle = 'white';
+			ctx.fillText(text, coordinate.x, coordinate.y);
 		});
 
-		for (let i = 0; i < notes.length - 1; i++) {
-			const note = notes[i];
-			const normalizedNote = note % 12;
+		// --- draw dots to represent when notes are played --- //
+		notes.map((note) => {
+			const octave = Math.floor(note / 12);
 
-			const result = coordinates.find(
-				(x, i) => (i * 7) % 12 === normalizedNote
-			)!;
+			const resultCoordinates = findNoteCoordinates(note, coordinates);
+			const radius = octave / 10;
 
-			const nextNote = notes[i + 1];
-			const nextIndex = nextNote % 12;
-
-			const result2 = coordinates.find(
-				(x, i) => (i * 7) % 12 === nextIndex
-			)!;
+			ctx.strokeStyle = `rgba(255,255,255,0.25)`;
+			ctx.lineWidth = 1;
 
 			ctx.beginPath();
-			ctx.strokeStyle = `rgba(0,0,0,${0.25}`;
+			ctx.arc(
+				resultCoordinates.x,
+				resultCoordinates.y,
+				25 * radius,
+				0,
+				Math.PI * 2
+			);
+			ctx.stroke();
+		});
 
-			ctx.moveTo(result.x, result.y);
-			ctx.lineTo(result2.x, result2.y);
+		// --- CONNECTING LINES --- //
+		const lineOpacity = 0.5;
+		const lineWidth = 2;
+
+		for (let i = 0; i < notes.length - 1; i++) {
+			// this is a stupidly overcomplicated wawy to do shit
+			const results = Array(2)
+				.fill(0)
+				.map((_, j) => {
+					const note = notes[i + j];
+					return findNoteCoordinates(note, coordinates);
+				});
+
+			ctx.lineWidth = lineWidth;
+
+			const color =
+				COLORS[Math.abs(notes[i] - notes[i + 1]) % COLORS.length];
+			ctx.strokeStyle = `rgba(${color},${lineOpacity}`;
+
+			ctx.beginPath();
+
+			ctx.moveTo(results[0].x, results[0].y);
+			ctx.lineTo(results[1].x, results[1].y);
 
 			ctx.stroke();
 		}
 	}, [notes]);
 
 	return (
-		<div>
-			<canvas
-				ref={canvasRef}
-				width='400'
-				height='400'
-				style={{ border: '1px solid black' }}
-			/>
+		<div className='absolute top-0 left-0'>
+			<canvas ref={canvasRef} width='400' height='400' />
 		</div>
 	);
 };
@@ -133,4 +176,12 @@ function generateCoordinates(
 		coordinates.push({ x, y });
 	}
 	return coordinates;
+}
+
+function findNoteCoordinates(
+	note: number,
+	coordinates: Array<{ x: number; y: number }>
+) {
+	const normalizedNote = note % 12;
+	return coordinates.find((_, i) => (i * 7) % 12 === normalizedNote)!;
 }
