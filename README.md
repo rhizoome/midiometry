@@ -2,7 +2,6 @@
 
 <p align="center">
     <img src=https://github.com/dvub/midiometry/blob/master/media/image.png>
-![midiometry in action.](media/image.png)
 </p>
 
 This is MIDIOMETRY, a free & open-source plugin that visualizes your playing. (This plugin does NOT visualize audio, just MIDI inputs!)
