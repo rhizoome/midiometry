@@ -25,7 +25,7 @@ jobs:
           - { name: ubuntu-20.04, os: ubuntu-20.04, cross-target: "" }
           - {
               name: macos-universal,
-              os: macos-12,
+              os: macos-latest,
               cross-target: aarch64-apple-darwin,
             }
           - { name: windows, os: windows-latest, cross-target: "" }
@@ -40,7 +40,7 @@ jobs:
         if: startsWith(matrix.os, 'ubuntu')
         run: |
           sudo apt-get update
-          sudo apt-get install -y libasound2-dev libgl-dev libjack-dev libx11-xcb-dev  libxcb1-dev libxcb-dri2-0-dev libxcb-icccm4-dev libxcursor-dev libxkbcommon-dev libxcb-shape0-dev libxcb-xfixes0-dev
+          sudo apt-get install -y libasound2-dev libgl-dev libjack-dev libx11-xcb-dev  libxcb1-dev libxcb-dri2-0-dev libxcb-icccm4-dev libxcursor-dev libxkbcommon-dev libxcb-shape0-dev libxcb-xfixes0-dev libglib2.0-0 libwebkit2gtk-4.1-dev
 
       - uses: actions/cache@v3
         # FIXME: Caching `target/` causes the Windows runner to blow up after some time
