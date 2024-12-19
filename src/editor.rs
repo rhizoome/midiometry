@@ -41,7 +41,7 @@ pub fn create_editor(buffer: Consumer<NoteEvent<()>>) -> WebViewEditor {
                     &path[1..]
                 };
 
-                let dir = include_dir!("$CARGO_MANIFEST_DIR/target/bundled/dist");
+                let dir = include_dir!("$CARGO_MANIFEST_DIR/assets/");
 
                 // mime guess is awesome!
                 let mime_type =
