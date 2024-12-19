@@ -1,6 +1,9 @@
 # MIDIOMETRY
 
+<p align="center">
+    <img src=https://github.com/dvub/midiometry/blob/master/media/image.png>
 ![midiometry in action.](media/image.png)
+</p>
 
 This is MIDIOMETRY, a free & open-source plugin that visualizes your playing. (This plugin does NOT visualize audio, just MIDI inputs!)
 
@@ -28,8 +31,6 @@ I haven't tested FL studio at all.
 
 Bitwig has the best support for MIDI-related plugins and **should work seamlessly**.
 
-This plugin **does not** actually modify
-
 ### OS Notes
 
 #### Linux
@@ -38,4 +39,4 @@ This plugin **may or may not work if you're on Linux.** In my testing with Bitwi
 
 ### Issues
 
-Please open an issue on this repository if something isn't working.
+Please open an issue on this repository if something isn't working, and I'll do my best to respond and work on it.
