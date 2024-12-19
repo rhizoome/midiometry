@@ -22,7 +22,7 @@ jobs:
     strategy:
       matrix:
         include:
-          # - { name: Ubuntu (latest), os: ubuntu-latest, cross-target: "" }
+          - { name: Ubuntu (latest), os: ubuntu-latest, cross-target: "" }
           # - {
           #    name: macos-universal,
           #    os: macos-latest,
