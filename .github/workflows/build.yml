@@ -93,7 +93,7 @@ jobs:
             if [[ -n $cross_target ]]; then
               package_args+=("--target" "$cross_target")
             fi
-            cargo xtask bundle midiometry --release
+            cargo xtask bundle midiometry --locked --release
           fi
 
       - name: Determine build archive name
